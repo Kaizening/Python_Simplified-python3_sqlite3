@@ -1,7 +1,44 @@
 import tkinter as tk
 from PIL import ImageTk
+import sqlite3
+from numpy import random
 
 bg_colour = "#3d6466"
+
+def fetch_db():
+    # Establecer conexion base de datos
+    connection = sqlite3.connect("data/recipes.db")
+    # Crear objeto cursor
+    cursor = connection.cursor()
+    # Ahora podemos llamar comandos SQL en este objeto cursor
+    # Cada receta esta guardada en un tabla distinta, el nombre de la receta es el titulo de la tabla
+    # Cada fila de la tabla es un ingrediente de la receta, mientras que
+    # las columnas son de 0 a 3, [0]id , [1]name, [2]quantity, [3]unit
+    # El comando SQL para seleccionar todos los nombre de las tablas de una base de datos es:    
+    cursor.execute("SELECT * FROM sqlite_schema WHERE type='table';")
+    # Hacer un fetch para poder asignarlo a una variable, y luego imprimir esa variable
+    all_tables = cursor.fetchall()
+    
+    # Crear la variable idx para que se le asigne un valor random de 0 a la cantidad total de tablas
+    # La funcion len empieza a contar desde 1 es por ello que se le resta 1
+    idx = random.randint(0, len(all_tables)-1)
+    
+    # Se da como indice el numero random generado para idx
+    print(all_tables[idx])
+    
+    # Fetch ingredients
+    # Debemos recordar que los ingredientes estan en lo que seria el campo de la columna [1], que corrsponda a la tabla0 [idx]
+    table_name = all_tables[idx][1]
+    # Una vez seleccionado el nombre de la tabla, podemos hacer un fetch de todos sus ingredientes
+    cursor.execute("SELECT * FROM " + table_name + ";")
+    # Guardamos todos los ingredientes seleccionados en ingredients
+    ingredients = cursor.fetchall()
+    # Imprimimos los ingredientes
+    print(ingredients)
+    print(table_name)
+    
+    # Debemos terminar la conexion que hemos establecido
+    connection.close()
 
 def load_frame1():
     # Forma de prevenir que un widget child modifique el parent con el method propagate
@@ -42,7 +79,8 @@ def load_frame1():
         ).pack(pady=20)
 
 def load_frame2():
-    print("Hellow Mariya")
+    fetch_db()
+
 
 # Initiallize app
 root = tk.Tk()
