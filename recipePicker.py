@@ -2,8 +2,16 @@ import tkinter as tk
 from PIL import ImageTk
 import sqlite3
 from numpy import random
+import pyglet
 
 bg_colour = "#3d6466"
+
+pyglet.font.add_file("fonts/Ubuntu-Bold.ttf")
+pyglet.font.add_file("fonts/Shanti-Regular.ttf")
+
+def clear_widgets(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
 
 def fetch_db():
     # Establecer conexion base de datos
@@ -64,6 +72,8 @@ def pre_process(table_name, table_records):
     
 
 def load_frame1():
+    # Despejar el frame quitando los widgets generados anteriormente
+    clear_widgets(frame2)
     # Este metodo apila un frame sobre otro. El mas relevante va arriba
     frame1.tkraise()   
     # Forma de prevenir que un widget child modifique el parent con el method propagate
@@ -86,14 +96,14 @@ def load_frame1():
         text="Ready for your recipe?",
         bg=bg_colour,
         fg="white",
-        font=("TkMenuFont", 14)
+        font=("Shanti", 14)
         ).pack()
 
     # Button widget
     tk.Button(
         frame1,
-        text="SHUFFLE0",
-        font=("TkHeadingFont", 20),
+        text="SHUFFLE",
+        font=("Ubuntu", 20),
         bg="#28393a",
         fg="white",
         cursor="hand2",
@@ -103,6 +113,8 @@ def load_frame1():
         ).pack(pady=20)
 
 def load_frame2():
+    # Despejar el frame quitando los widgets generados anteriormente
+    clear_widgets(frame1)
     # Para poder moverse entre frames, debemos iniciar cada frame con un .tkraise
     # Este metodo apila un frame sobre otro. El mas relevante va arriba
     frame2.tkraise()    
@@ -127,7 +139,7 @@ def load_frame2():
         text=title,
         bg=bg_colour,
         fg="white",
-        font=("TkHeadingFont", 20)
+        font=("Ubuntu", 20)
         ).pack(pady=25)
     
     for i in ingredients:
@@ -136,16 +148,16 @@ def load_frame2():
         tk.Label(
             frame2,
             text=i,
-            bg=bg_colour,
+            bg="#28393a",
             fg="white",
-            font=("TkMenuFont", 12)
-            ).pack()
+            font=("Shanti", 12)
+            ).pack(fill="both")
         
     # Button widget
     tk.Button(
         frame2,
         text="BACK",
-        font=("TkHeadingFont", 18),
+        font=("Ubuntu", 18),
         bg="#28393a",
         fg="white",
         cursor="hand2",
@@ -158,6 +170,9 @@ def load_frame2():
 root = tk.Tk()
 root.title("Recipe Picker")
 
+root.eval("tk::PlaceWindow . center")
+
+
 # Create a frame widget
 frame1 = tk.Frame(root, width=500, height=500, bg=bg_colour)
 # El frame2 no lleva ancho y altura, porque de desea que se ajuste al contenido
@@ -167,7 +182,7 @@ frame2 = tk.Frame(root, bg=bg_colour)
 # Hace un loop en la tupla de frame1 a frame2
 # luego llama al metodo grid por la variable de iteracion
 for frame in (frame1, frame2):
-    frame.grid(row=0, column=0)
+    frame.grid(row=0, column=0, sticky="nesw")
 
 # Llamar al la funcion load_frame1 ya que sino no se vera ningun elemento
 load_frame1()
